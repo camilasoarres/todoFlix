@@ -58,8 +58,8 @@ const CloseButton = styled.button`
 
 const Aside = styled.aside`
 	display: flex;
-	justify-content: center;
-	width: 30%;
+	width: calc(30% - 1rem);
+	padding-left: 1rem;
 
 	@media (max-width: 490px) {
     display: none;
@@ -115,8 +115,35 @@ const Button = styled.button`
 	border-radius: 2px;
 	font-size: .85rem;
 	background: ${props => (props.cancel ? 'transparent' : '#f0c18b')};
+	color: ${props => !props.cancel && '#505050'};
 	outline: none;
 	cursor: pointer;
+	transition: .2s;
+
+	&:hover {
+		opacity: .7;
+	}
+`;
+
+const StatusBox = styled.div`
+	display: flex;
+`;
+
+const StatusButton = styled.div`
+	display: flex;
+	align-items: center;
+	margin-right: 1rem;
+	color: #505050;
+	cursor: pointer;
+`;
+
+const StatusIcon = styled.div`
+	width: 18px;
+	height: 18px;
+	margin-right: .5rem;
+	border: red;
+	border-radius: 50%;
+	background: ${props => (props.isSelected ? '#f0c18b' : '#CECECE40')};
 	transition: .2s;
 
 	&:hover {
@@ -152,9 +179,9 @@ class AddMovieModal extends Component {
 		});
 	}
 
-	onChangeStatus = () => {
+	onChangeStatus = (status) => {
 		this.setState({
-			statusInput: this.statusInput.value,
+			statusInput: status,
 		});
 	}
 
@@ -170,12 +197,15 @@ class AddMovieModal extends Component {
 			description: this.state.descriptionInput,
 			imagem: this.state.urlImageInput,
 			note: this.state.note,
+			class: this.state.statusInput,
 		});
 
 		this.props.handleModal();
 	}
 
 	render() {
+		const { statusInput } = this.state;
+		console.log(statusInput === 'já vi')
 		return (
 			<Overlay onClick={this.props.handleModal}>
 				<Modal onClick={this.stopClick}>
@@ -193,9 +223,14 @@ class AddMovieModal extends Component {
 							ref={(node) => { this.descriptionInput = node; }}
 							onChange={this.onChangeDescription} />
 						<Label>Status:</Label>
-						<Input
-							ref={(node) => { this.statusInput = node; }}
-							onChange={this.onChangeStatus} />
+						<StatusBox>
+							<StatusButton onClick={(ev) => this.onChangeStatus('já vi')}>
+								<StatusIcon isSelected={statusInput === 'já vi'}></StatusIcon> Já vi
+							</StatusButton>
+							<StatusButton onClick={() => this.onChangeStatus('quero assistir')}>
+								<StatusIcon isSelected={statusInput === 'quero assistir'}></StatusIcon> Quero assistir
+							</StatusButton>
+						</StatusBox>
 						<Label>Imagem do filme:</Label>
 						<AddImageWrapper>
 							<Input

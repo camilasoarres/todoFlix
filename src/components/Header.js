@@ -2,8 +2,31 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 
+import slide1 from '../assets/slide1.jpg';
+import slide2 from '../assets/slide2.png';
+import slide3 from '../assets/slide3.png';
+import slide4 from '../assets/slide4.jpg';
+import slide5 from '../assets/slide5.jpg';
+import slide6 from '../assets/slide6.png';
+import slide7 from '../assets/slide7.png';
+import slide8 from '../assets/slide8.jpg';
+import slide9 from '../assets/slide9.png';
+import slide10 from '../assets/slide10.png';
+import slide11 from '../assets/slide11.png';
+import slide12 from '../assets/slide12.jpg';
+import slide13 from '../assets/slide13.jfif';
+import slide14 from '../assets/slide14.png';
+import slide15 from '../assets/slide15.png';
+import slide16 from '../assets/slide16.jfif';
+import slide17 from '../assets/slide17.jfif';
+
 // style properties
 const Container = styled.header`
+	display: flex;
+	flex-direction: column;
+`;
+
+const Wrapper = styled.header`
 	position: relative;
 	display: flex;
 	justify-content: space-between;
@@ -20,6 +43,7 @@ const Title = styled.h1`
 	margin: 0;
 	font: 600 3rem sans-serif;
 	color: #c74350;
+	cursor: pointer;
 `;
 
 const Box = styled.div`
@@ -70,6 +94,7 @@ const Menu = styled.ul`
 	padding: 0;
 	border: solid .5px #CECECE;
 	border-radius: 4px;
+	background: #fff;
 `;
 
 const MenuItem = styled.li`
@@ -87,12 +112,62 @@ const MenuItem = styled.li`
 	}
 `;
 
+const ContainerSlide = styled.div`
+	position: relative;
+	display: flex;
+	width: 100%;
+	margin-top: 1rem;
+`;
+
+const ImageSlide = styled.img`
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: .2s;
+`;
+
+const PaginationSlide = styled.button`
+	position: absolute;
+	top: 42%;
+	left: ${props => !props.next && '1rem'};
+	right: ${props => props.next && '1rem'};
+	padding: .75rem;
+	font-size: 2rem;
+	border: none;
+	border-radius: 8px;
+	background: #fff;
+	opacity: ${props => props.hasOpacity && '.4'};
+	cursor: pointer;
+	outline: none;
+	transition: .2s;
+`;
+
 class Header extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
 			isOpen: false,
+			slideImages: [
+				slide1,
+				slide2,
+				slide3,
+				slide4,
+				slide5,
+				slide6,
+				slide7,
+				slide8,
+				slide9,
+				slide10,
+				slide11,
+				slide12,
+				slide13,
+				slide14,
+				slide15,
+				slide16,
+				slide17,
+			],
+			counter: 0,
 		};
 	}
 
@@ -106,37 +181,82 @@ class Header extends Component {
 		ev.stopPropagation();
 	}
 
-	handleAlreadyWatchedFilter = () => {
-		this.props.handleListType('já vi');
+	handleAllList = () => {
+		this.props.handleListType('');
 	}
 
-	handleToWatchFilter = () => {
+	handleAlreadyWatchedFilter = () => {
 		this.props.handleListType('quero assistir');
 	}
 
+	handleToWatchFilter = () => {
+		this.props.handleListType('já vi');
+	}
+
+	nextSlide = () => {
+		const { counter, slideImages } = this.state;
+
+		if (counter < slideImages.length - 1) {
+			this.setState({
+				counter: counter + 1,
+			});
+		}
+	}
+
+	prevSlide = () => {
+		const { counter } = this.state;
+
+		if (counter > 0) {
+			this.setState({
+				counter: counter - 1,
+			});
+		}
+	}
+
+	renderSlide = () => {
+		const { slideImages, counter } = this.state;
+
+		return <ImageSlide src={slideImages[counter]} alt={'imagem do slide'} />;
+	}
+
 	render() {
-		const { isOpen } = this.state;
+		const { isOpen, counter, slideImages } = this.state;
 		const { modalOpen } = this.props;
 
 		return (
 			<Container>
-				<Title>ToDoFlix</Title>
-				<Box>
-					<Button onClick={this.handleMenu} categories background={isOpen}>
-						Categorias
-					</Button>
-					<Button onClick={this.props.handleModal} background={modalOpen}>
-						Adicionar filmes
-					</Button>
-				</Box>
-				{isOpen && (
-					<Overlay onClick={this.handleMenu}>
-						<Menu onClick={this.stopClick}>
-							<MenuItem onClick={this.handleAlreadyWatchedFilter}>Quero ver</MenuItem>
-							<MenuItem onClick={this.handleToWatchFilter}>Já vistos</MenuItem>
-						</Menu>
-					</Overlay>
-				)}
+				<Wrapper>
+					<Title onClick={this.handleAllList}>ToDoFlix</Title>
+					<Box>
+						<Button onClick={this.handleMenu} categories background={isOpen}>
+							Categorias
+						</Button>
+						<Button onClick={this.props.handleModal} background={modalOpen}>
+							Adicionar filmes
+						</Button>
+					</Box>
+					{isOpen && (
+						<Overlay onClick={this.handleMenu}>
+							<Menu onClick={this.stopClick}>
+								<MenuItem onClick={this.handleAlreadyWatchedFilter}>Quero ver</MenuItem>
+								<MenuItem onClick={this.handleToWatchFilter}>Já vistos</MenuItem>
+							</Menu>
+						</Overlay>
+					)}
+				</Wrapper>
+				<ContainerSlide>
+					{this.renderSlide()}
+					<PaginationSlide
+						onClick={this.prevSlide}
+						hasOpacity={counter === 0}
+					>←</PaginationSlide>
+					<PaginationSlide
+						onClick={this.nextSlide}
+						next
+						hasOpacity={counter === slideImages.length - 1}>
+						→
+					</PaginationSlide>
+				</ContainerSlide>
       </Container>
 		);
 	}
